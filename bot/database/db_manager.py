@@ -1,7 +1,15 @@
 users = {
     'Timofeeeey': {
-        'role': 'user',
+        'role': 'admin',
         'name': None
+    },
+    'Ivan': {
+        'role': 'instructor',
+        'name': 'Vanya'
+    },
+    'Vladimir': {
+        'role': 'instructor',
+        'name': 'Vova'
     }
 }
 
@@ -17,6 +25,17 @@ def get_bd():
     return users
 
 
+def get_all_role(role):
+    result = []
+    for user in users:
+        if users[user]['role'] == role:
+            if users[user]['name'] is not None:
+                result.append(f'{users[user]["name"]} (@{user})')
+            else:
+                result.append(f'@{user}')
+    return result
+
+
 def add_in_bd(username, role='user', name=None):
     if username in users:
         users[username]['role'] = role
@@ -26,3 +45,11 @@ def add_in_bd(username, role='user', name=None):
         users[username]['role'] = role
         users[username]['name'] = name
         return 'added in_bd'
+
+
+def delete_in_bd(username):
+    if username in users:
+        del users[username]
+        return 'deleted in_bd'
+    else:
+        return 'username not found'

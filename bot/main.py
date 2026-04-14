@@ -29,7 +29,6 @@ def main():
 
 
 
-
             bot.infinity_polling()
         except:
             print('Failed to connect to Telegram API')
