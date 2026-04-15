@@ -1,6 +1,6 @@
 import sqlite3 as sql
 
-conn = sql.connect('moto-school.db')
+conn = sql.connect('moto-school.db', check_same_thread=False)
 cursor = conn.cursor()
 conn.row_factory = sql.Row
 
