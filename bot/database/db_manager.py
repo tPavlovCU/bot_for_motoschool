@@ -21,10 +21,6 @@ def get_role(username):
         return None
 
 
-def get_bd():
-    return users
-
-
 def get_all_role(role):
     result = []
     for user in users:

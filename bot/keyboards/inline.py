@@ -1,5 +1,5 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-from database.db_manager import get_all_role
+from database.db_manager_sql import get_all_role
 
 def get_username(s):
     try:

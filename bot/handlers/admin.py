@@ -1,4 +1,4 @@
-from database.db_manager import get_role, add_in_bd, delete_in_bd
+from database.db_manager_sql import get_role, add_in_bd, delete_in_bd
 from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, \
     get_username
 
@@ -38,7 +38,7 @@ def register_handlers_admin(bot):
             bot.send_message(call.message.chat.id, 'Выберите инструктора для удаления',
                              reply_markup=admin_delete_instructor_keyboard())
 
-        elif 'admin_delete_' in call.data:
+        elif call.data.startswith('admin_delete_'):
             bot.answer_callback_query(call.id)
             markup = admin_delete_instructor_confirm(call)
             bot.send_message(call.message.chat.id, f'Вы уверены, что хотите удалить {call.data[13:]}?',
