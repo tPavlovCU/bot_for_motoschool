@@ -39,7 +39,7 @@ class DBManager:
         SELECT role FROM users WHERE user_id = ?''', (user_id,))
         result = cursor.fetchone()
         cursor.close()
-        return result
+        return result[0]
 
 
     def get_all_role(self, role):
@@ -65,6 +65,13 @@ class DBManager:
         cursor.close()
         return result
 
+    def test_instructors(self, user_id, username, name):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        INSERT INTO users (user_id, username, name, role) VALUES (?, ?, ?, ?)''', (user_id, username, name,'instructor'))
+        self.conn.commit()
+        cursor.close()
+        return None
 
 
 db = DBManager('moto-school.db')

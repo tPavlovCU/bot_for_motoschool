@@ -5,11 +5,20 @@ admins = ['Timofeeeey']
 instructors = []
 
 def register_handlers_user(bot):
+    @bot.message_handler(commands=['test'])
+    def test(message):
+        try:
+            db.test_instructors(1, 'Vladimir', 'Vova')
+        except:pass
+
+        try:
+            db.test_instructors(2, 'Alexander', 'Sanya')
+        except:pass
+
 
     @bot.message_handler(commands=['start'])
     def start(message):
         role = db.get_role(message.from_user.id)
-        print(role)
         if role == 'admin':
             bot.send_message(message.chat.id, 'Привет, админ, чтобы вызвать меню: /admin_menu')
 

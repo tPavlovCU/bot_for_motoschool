@@ -32,7 +32,7 @@ def register_handlers_admin(bot):
             bot.send_message(call.message.chat.id, 'Введите имя нового инструктора')
             bot.register_next_step_handler(call.message, take_name_new_instructor)
 
-        elif call.data == 'admin_delete_instructor':
+        if call.data == 'admin_delete_instructor':
             bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, 'Выберите инструктора для удаления',
                              reply_markup=admin_delete_instructor_keyboard())
@@ -50,8 +50,8 @@ def register_handlers_admin(bot):
         elif call.data.startswith('admin_confirm_delete_yes'):
             bot.answer_callback_query(call.id)
             user_id = call.data.replace('admin_confirm_delete_yes_', '')
-            db.delete_in_bd(user_id)
             info = db.get_in_bd(user_id)
+            db.delete_in_bd(user_id)
             name = info['name']
             username = info['username']
             bot.send_message(call.message.chat.id, f'Инстркутор {name} (@{username}) Удален')
