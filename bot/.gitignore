@@ -29,3 +29,6 @@ db.db
 plan.txt
 
 test.py
+
+*.db
+*.db-journal

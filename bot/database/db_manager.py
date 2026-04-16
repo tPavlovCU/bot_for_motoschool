@@ -1,6 +1,6 @@
 users = {
     'Timofeeeey': {
-        'role': 'admin',
+        'role': 'user',
         'name': None
     },
     'Ivan': {
@@ -40,6 +40,7 @@ def add_in_bd(username, role='user', name=None):
         users[username] = {}
         users[username]['role'] = role
         users[username]['name'] = name
+        print(users)
         return 'added in_bd'
 
 

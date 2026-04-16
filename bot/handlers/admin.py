@@ -1,4 +1,4 @@
-from database.db_manager_sql import get_role, add_in_bd, delete_in_bd
+from database.db_manager import get_role, add_in_bd, delete_in_bd
 from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, \
     get_username
 
@@ -23,7 +23,7 @@ def register_handlers_admin(bot):
 
     def take_username_new_instructor(message, name):
         username = message.text
-        bot.send_message(message.chat.id, 'Инструктор успешно добавлен')
+        bot.send_message(message.chat.id, 'Инструктор успешно добавлен', reply_markup=admin_menu_keyboard())
         add_in_bd(username=username, role='instructor', name=name)
 
     @bot.callback_query_handler(func=is_admin)
