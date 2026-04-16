@@ -2,7 +2,6 @@ import telebot
 import dotenv
 from dotenv import load_dotenv
 import os
-from database.db_manager import get_role
 
 from handlers.admin import register_handlers_admin
 from handlers.user import register_handlers_user
