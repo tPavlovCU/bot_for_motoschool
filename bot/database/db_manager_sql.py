@@ -20,25 +20,39 @@ class DBManager:
         ''')
 
         cursor.execute('''
-        CREATE TABLE IF NOT EXISTS invite_keys (
+        CREATE TABLE IF NOT EXISTS invite_codes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        key TEXT NOT NULL)
+        code TEXT NOT NULL)
         ''')
         cursor.close()
 
-    def add_in_bd(self,user_id, username = None, role = 'user', name=None):
+    # def add_in_bd(self,user_id, username = None, role = 'user', name=None):
+    #     cursor = self.conn.cursor()
+    #     try:
+    #         cursor.execute('''
+    #         INSERT INTO users (user_id, username, role, name) VALUES (?, ?, ?, ?)''', (user_id, username, role, name))
+    #     except:
+    #         cursor.execute('''
+    #         SELECT user_id, username, role, name FROM users''')
+    #         res = cursor.fetchone()
+    #         for i in res:
+    #             print('res',i)
+    #     self.conn.commit()
+    #     cursor.close()
+
+    def add_in_bd(self, user_id, username = None, role = 'user', name=None):
         cursor = self.conn.cursor()
-        try:
+        cursor.execute('''
+        SELECT user_id FROM users WHERE user_id = ?''', (user_id,))
+        res = cursor.fetchone()
+        if res is None:
             cursor.execute('''
             INSERT INTO users (user_id, username, role, name) VALUES (?, ?, ?, ?)''', (user_id, username, role, name))
-        except:
+        else:
             cursor.execute('''
-            SELECT user_id, username, role, name FROM users''')
-            res = cursor.fetchone()
-            for i in res:
-                print('res',i)
-        self.conn.commit()
-        cursor.close()
+            UPDATE users SET role = ? WHERE user_id = ?''', (role, user_id))
+            self.conn.commit()
+            cursor.close()
 
     def get_role(self, user_id):
         cursor = self.conn.cursor()
@@ -80,8 +94,25 @@ class DBManager:
         cursor.close()
         return None
 
-    def create_key(self):
+    def activate_code(self, code):
         cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT id FROM invite_codes WHERE code = ?''', (code,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        if result is None:
+            return False
+        else:
+            return True
+
+
+    def delete_code(self, code):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        DELETE FROM invite_codes WHERE code = ?''', (code,))
+        self.conn.commit()
+        cursor.close()
 
 
 db = DBManager('moto-school.db')

@@ -5,7 +5,7 @@ from database.db_manager_sql import db
 
 def admin_menu_keyboard():
     markup = InlineKeyboardMarkup()
-    button1 = InlineKeyboardButton('Добавить инструктора', callback_data='admin_add_instructor')
+    button1 = InlineKeyboardButton('Добавить инструктора/админа', callback_data='admin_add_somebody')
     button2 = InlineKeyboardButton('Удалить инструктора', callback_data='admin_delete_instructor')
     button3 = InlineKeyboardButton('Изменить расписание инструктора', callback_data='admin_edit_instructor')
 
@@ -36,4 +36,13 @@ def admin_delete_instructor_confirm(call):
     markup.add(button1, button2)
     return markup
 
+
+def admin_add_keyboard():
+    markup = InlineKeyboardMarkup()
+    button1 = InlineKeyboardButton('Для инструктора', callback_data='admin_add_instructor')
+    button2 = InlineKeyboardButton('Для админа', callback_data='admin_add_admin')
+
+    markup.row(button1)
+    markup.row(button2)
+    return markup
 

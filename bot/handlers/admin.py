@@ -1,6 +1,6 @@
 from database.db_manager_sql import db
-from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm
-
+from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, admin_add_keyboard
+from utils.invite_codes import generate_instructor_invite_code, generate_admin_invite_code
 
 def is_admin(message):
     user_id = message.from_user.id
@@ -20,10 +20,29 @@ def register_handlers_admin(bot):
 
     @bot.callback_query_handler(func=is_admin)
     def callback_handle_query(call):
-        if call.data == 'admin_add_instructor':
-           pass
+        if call.data == 'admin_add_somebody':
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, "Какой ключ вы бы хотели создать?", reply_markup = admin_add_keyboard())
 
+        elif call.data == 'admin_add_instructor':
+            bot.answer_callback_query(call.id)
+            code = generate_instructor_invite_code()
+            answer = f'''
+            Отправьте этот код инструктору, он должен ввести /invite_code
+            
+<code>{code}</code>
+            '''
+            bot.send_message(call.message.chat.id, answer, parse_mode = 'HTML')
 
+        elif call.data == 'admin_add_admin':
+            bot.answer_callback_query(call.id)
+            code = generate_admin_invite_code()
+            answer = f'''
+            Отправьте этот код админу, он должен ввести /invite_code
+
+<code>{code}</code>
+            '''
+            bot.send_message(call.message.chat.id, answer, parse_mode='HTML')
 
 
         if 'delete' in call.data:
