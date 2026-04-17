@@ -1,4 +1,3 @@
-import telebot
 from database.db_manager_sql import db
 
 admins = ['Timofeeeey']

@@ -1,5 +1,6 @@
-import sqlite3
 import sqlite3 as sql
+
+
 
 class DBManager:
     def __init__(self, path):
@@ -16,6 +17,12 @@ class DBManager:
         username TEXT DEFAULT NULL,
         role TEXT DEFAULT 'user',
         name TEXT DEFAULT NULL)
+        ''')
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS invite_keys (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT NOT NULL)
         ''')
         cursor.close()
 
@@ -72,6 +79,9 @@ class DBManager:
         self.conn.commit()
         cursor.close()
         return None
+
+    def create_key(self):
+        cursor = self.conn.cursor()
 
 
 db = DBManager('moto-school.db')
