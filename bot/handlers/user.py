@@ -21,7 +21,7 @@ def register_handlers_user(bot):
 
         elif role == 'user' or role is None:
             if message.from_user.username in admins:
-                bot.send_message(message.chat.id, 'Добро пожаловать, админ, чтобы вызвать меню: /admin_menu')
+                bot.send_message(message.chat.id, 'Добро пожаловать, админ, чтобы вызвать меню: /admin_menu или если у вас есть ключ /invite_code')
                 db.add_in_bd(message.from_user.id, message.from_user.username, role='admin')
 
             elif message.from_user.username in instructors:
@@ -44,8 +44,10 @@ def register_handlers_user(bot):
             if code[0] == '0':
                 db.delete_code(code)
                 bot.register_next_step_handler(message, get_new_instructor_name)
+                bot.send_message(message.chat.id, 'Введите ваше имя')
             elif code[0] == '1':
                 db.delete_code(code)
+                bot.send_message(message.chat.id, 'Введите ваше имя')
                 bot.register_next_step_handler(message, get_new_admin_name)
 
         else:

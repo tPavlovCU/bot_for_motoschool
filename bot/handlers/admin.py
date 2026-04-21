@@ -32,6 +32,7 @@ def register_handlers_admin(bot):
             
 <code>{code}</code>
             '''
+            db.add_code(code)
             bot.send_message(call.message.chat.id, answer, parse_mode = 'HTML')
 
         elif call.data == 'admin_add_admin':
@@ -42,6 +43,7 @@ def register_handlers_admin(bot):
 
 <code>{code}</code>
             '''
+            db.add_code(code)
             bot.send_message(call.message.chat.id, answer, parse_mode='HTML')
 
 

@@ -26,19 +26,6 @@ class DBManager:
         ''')
         cursor.close()
 
-    # def add_in_bd(self,user_id, username = None, role = 'user', name=None):
-    #     cursor = self.conn.cursor()
-    #     try:
-    #         cursor.execute('''
-    #         INSERT INTO users (user_id, username, role, name) VALUES (?, ?, ?, ?)''', (user_id, username, role, name))
-    #     except:
-    #         cursor.execute('''
-    #         SELECT user_id, username, role, name FROM users''')
-    #         res = cursor.fetchone()
-    #         for i in res:
-    #             print('res',i)
-    #     self.conn.commit()
-    #     cursor.close()
 
     def add_in_bd(self, user_id, username = None, role = 'user', name=None):
         cursor = self.conn.cursor()
@@ -60,6 +47,8 @@ class DBManager:
         SELECT role FROM users WHERE user_id = ?''', (user_id,))
         result = cursor.fetchone()
         cursor.close()
+        if result is None:
+            return None
         return result[0]
 
 
@@ -86,13 +75,14 @@ class DBManager:
         cursor.close()
         return result
 
-    def test_instructors(self, user_id, username, name):
+
+    def add_code(self,code):
         cursor = self.conn.cursor()
         cursor.execute('''
-        INSERT INTO users (user_id, username, name, role) VALUES (?, ?, ?, ?)''', (user_id, username, name,'instructor'))
+        INSERT INTO invite_codes (code) VALUES (?)''', (code,))
         self.conn.commit()
         cursor.close()
-        return None
+
 
     def activate_code(self, code):
         cursor = self.conn.cursor()
