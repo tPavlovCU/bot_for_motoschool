@@ -8,10 +8,12 @@ def admin_menu_keyboard():
     button1 = InlineKeyboardButton('Добавить инструктора/админа', callback_data='admin_add_somebody')
     button2 = InlineKeyboardButton('Удалить инструктора', callback_data='admin_delete_instructor')
     button3 = InlineKeyboardButton('Изменить расписание инструктора', callback_data='admin_edit_instructor')
+    button4 = InlineKeyboardButton('Удалить данные о человеке', callback_data='admin_delete_user')
 
     markup.row(button1)
     markup.row(button2)
     markup.row(button3)
+    markup.row(button4)
     return markup
 
 

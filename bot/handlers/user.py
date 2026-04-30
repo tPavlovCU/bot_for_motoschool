@@ -20,16 +20,8 @@ def register_handlers_user(bot):
             bot.send_message(message.chat.id, 'Привет, инструктор, чтобы вызвать меню: /instructor_menu')
 
         elif role == 'user' or role is None:
-            if message.from_user.username in admins:
-                bot.send_message(message.chat.id, 'Добро пожаловать, админ, чтобы вызвать меню: /admin_menu или если у вас есть ключ /invite_code')
-                db.add_in_bd(message.from_user.id, message.from_user.username, role='admin')
-
-            elif message.from_user.username in instructors:
-                bot.send_message(message.chat.id, 'Добро пожаловать, инструктор, чтобы вызвать меню: /instructor_menu')
-                db.add_in_bd(message.from_user.id, message.from_user.username, role='instructor')
-
-            else:
-                bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка, чтобы записаться: /new_reg')
+            bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка, чтобы записаться: /new_reg')
+            if role is None:
                 db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user')
 
     @bot.message_handler(commands=['invite_code'])

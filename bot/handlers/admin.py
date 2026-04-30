@@ -18,6 +18,15 @@ def register_handlers_admin(bot):
 
 
 
+
+
+
+def register_callbacks_handlers_admin(bot):
+    def admin_delete_user_by_id(message):
+        result = db.delete_in_bd(int(message.text))
+        bot.send_message(message.chat.id, text=result)
+
+
     @bot.callback_query_handler(func=is_admin)
     def callback_handle_query(call):
         if call.data == 'admin_add_somebody':
@@ -46,8 +55,12 @@ def register_handlers_admin(bot):
             db.add_code(code)
             bot.send_message(call.message.chat.id, answer, parse_mode='HTML')
 
+        elif call.data == 'admin_delete_user':
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, 'Введите user_id человека для удаления')
+            bot.register_next_step_handler(call.message, admin_delete_user_by_id)
 
-        if 'delete' in call.data:
+        elif 'delete' in call.data:
             if call.data == 'admin_delete_instructor':
                 bot.answer_callback_query(call.id)
                 bot.send_message(call.message.chat.id, 'Выберите инструктора для удаления',

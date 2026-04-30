@@ -24,6 +24,10 @@ class DBManager:
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         code TEXT NOT NULL)
         ''')
+
+        #cursor.execute('''
+        #CREATE TABLE IF NOT EXISTS lessons (
+        #''')
         cursor.close()
 
 
@@ -62,10 +66,22 @@ class DBManager:
 
     def delete_in_bd(self, user_id):
         cursor = self.conn.cursor()
+
         cursor.execute('''
         DELETE FROM users WHERE user_id = ?''', (user_id,))
+        deleted_rows = cursor.rowcount
+
         self.conn.commit()
         cursor.close()
+
+        if deleted_rows == 1:
+            return 'Человек успешно удален'
+        elif deleted_rows == 0:
+            return 'Человек не найден'
+        else:
+            print('Удалено человек -', deleted_rows)
+            return None
+
 
     def get_in_bd(self, user_id):
         cursor = self.conn.cursor()

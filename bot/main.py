@@ -2,7 +2,7 @@ import telebot
 from dotenv import load_dotenv
 import os
 
-from handlers.admin import register_handlers_admin
+from handlers.admin import register_handlers_admin,register_callbacks_handlers_admin
 from handlers.user import register_handlers_user
 
 def main():
@@ -15,6 +15,7 @@ def main():
             bot = telebot.TeleBot(TOKEN)
             register_handlers_admin(bot)
             register_handlers_user(bot)
+            register_callbacks_handlers_admin(bot)
 
             bot.infinity_polling()
         except:
