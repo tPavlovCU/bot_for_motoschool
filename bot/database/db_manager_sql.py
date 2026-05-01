@@ -27,6 +27,11 @@ class DBManager:
 
         #cursor.execute('''
         #CREATE TABLE IF NOT EXISTS lessons (
+        #id INTEGER PRIMARY KEY AUTOINCREMENT,
+        #time TEXT NOT NULL,
+        #day INTEGER NOT NULL,
+        #month TEXT NOT NULL,
+        #teacher TEXT NOT NULL,
         #''')
         cursor.close()
 
@@ -119,6 +124,10 @@ class DBManager:
         DELETE FROM invite_codes WHERE code = ?''', (code,))
         self.conn.commit()
         cursor.close()
+
+
+    def add_days_in_bd(self, days):
+
 
 
 db = DBManager('moto-school.db')

@@ -48,3 +48,14 @@ def admin_add_keyboard():
     markup.row(button2)
     return markup
 
+
+def user_menu_keyboard():
+    markup = InlineKeyboardMarkup()
+    button1 = InlineKeyboardButton('Записаться на занятие', callback_data = 'user_new_lesson')
+    button2 = InlineKeyboardButton('Отменить занятие', callback_data='user_cancel_lesson')
+    button3 = InlineKeyboardButton('Ввести код приглашения', callback_data = 'user_use_invite_code')
+
+    markup.row(button1)
+    markup.row(button2)
+    markup.row(button3)
+    return markup

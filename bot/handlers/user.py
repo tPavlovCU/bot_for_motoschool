@@ -1,4 +1,5 @@
 from database.db_manager_sql import db
+from keyboards.inline import user_menu_keyboard
 
 admins = ['Timofeeeey']
 instructors = []
@@ -19,15 +20,18 @@ def register_handlers_user(bot):
         elif role == 'instructor':
             bot.send_message(message.chat.id, 'Привет, инструктор, чтобы вызвать меню: /instructor_menu')
 
-        elif role == 'user' or role is None:
-            bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка, чтобы записаться: /new_reg')
-            if role is None:
-                db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user')
+        elif role == 'user':
+            bot.send_message(message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка', reply_markup = user_menu_keyboard())
+        elif role is None:
+            bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка!',reply_markup=user_menu_keyboard())
+            db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user')
 
     @bot.message_handler(commands=['invite_code'])
     def invite_code(message):
         bot.send_message(message.chat.id, 'Введите ваш код приглашения')
         bot.register_next_step_handler(message, get_invite_code)
+
+
 
     def get_invite_code(message):
         code = message.text
@@ -54,3 +58,4 @@ def register_handlers_user(bot):
         name = message.text
         db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве админа')
+

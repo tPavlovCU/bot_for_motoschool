@@ -5,15 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6e6eb84b-5118-4c8c-b493-525337e972b7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/bot_for_moto.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/bot_for_moto.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/database/db_manager_sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/database/db_manager_sql.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/handlers/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/handlers/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/user.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/keyboards/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/keyboards/inline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,12 +43,12 @@
     &quot;assignee&quot;: &quot;TimofeeeeyPavlov&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:tPavlovCU/bot_for_motoschool.git",
-    "accountId": "fedbd0e1-0964-42e3-b8fd-30381866682b"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:tPavlovCU/bot_for_motoschool.git&quot;,
+    &quot;accountId&quot;: &quot;fedbd0e1-0964-42e3-b8fd-30381866682b&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
