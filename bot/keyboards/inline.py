@@ -48,6 +48,11 @@ def admin_add_keyboard():
     markup.row(button2)
     return markup
 
+def admin_cancel_keyboard():
+    markup = InlineKeyboardMarkup()
+    btn = InlineKeyboardButton('Отмена', callback_data='admin_cancel')
+    markup.row(btn)
+    return markup
 
 def user_menu_keyboard():
     markup = InlineKeyboardMarkup()
@@ -58,4 +63,41 @@ def user_menu_keyboard():
     markup.row(button1)
     markup.row(button2)
     markup.row(button3)
+    return markup
+
+
+
+def instructor_menu_keyboard():
+    markup = InlineKeyboardMarkup()
+    button1 = InlineKeyboardButton('Открыть запись', callback_data = 'instructor_new_lessons')
+    button2 = InlineKeyboardButton('Удалить запись', callback_data = 'instructor_cancel_lesson')
+
+    markup.row(button1)
+    markup.row(button2)
+    return markup
+
+
+def month_menu_keyboard():
+    markup = InlineKeyboardMarkup()
+
+    december = InlineKeyboardButton("Декабрь", callback_data = 'month_december')
+    january = InlineKeyboardButton("Декабрь", callback_data='month_january')
+    february = InlineKeyboardButton("Декабрь", callback_data='month_february')
+
+    march = InlineKeyboardButton("Декабрь", callback_data='month_march')
+    april = InlineKeyboardButton("Декабрь", callback_data='month_april')
+    may = InlineKeyboardButton("Декабрь", callback_data='month_may')
+
+    june = InlineKeyboardButton("Декабрь", callback_data='month_june')
+    july = InlineKeyboardButton("Декабрь", callback_data='month_july')
+    august = InlineKeyboardButton("Декабрь", callback_data='month_august')
+
+    september = InlineKeyboardButton("Декабрь", callback_data='month_september')
+    october = InlineKeyboardButton("Декабрь", callback_data='month_october')
+    november = InlineKeyboardButton("Декабрь", callback_data='month_november')
+
+    markup.row(december,january,february)
+    markup.row(march,april,may)
+    markup.row(june,july,august)
+    markup.row(september,october, november)
     return markup

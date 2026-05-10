@@ -1,4 +1,6 @@
 import sqlite3 as sql
+import datetime
+
 
 
 
@@ -8,7 +10,11 @@ class DBManager:
         self.conn = sql.connect(self.path, check_same_thread=False)
         self.conn.row_factory = sql.Row
         self.create_table()
-
+    def delete_table(self, table_name):
+        cursor = self.conn.cursor()
+        cursor.execute(f'DROP TABLE IF EXISTS {table_name}')
+        self.conn.commit()
+        cursor.close()
     def create_table(self):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -16,8 +22,11 @@ class DBManager:
         user_id INTEGER PRIMARY KEY,
         username TEXT DEFAULT NULL,
         role TEXT DEFAULT 'user',
-        name TEXT DEFAULT NULL)
+        name TEXT DEFAULT NULL,
+        chat_id TEXT NOT NULL,
+        action TEXT DEFAULT 'nothing')
         ''')
+
 
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS invite_codes (
@@ -25,25 +34,34 @@ class DBManager:
         code TEXT NOT NULL)
         ''')
 
-        #cursor.execute('''
-        #CREATE TABLE IF NOT EXISTS lessons (
-        #id INTEGER PRIMARY KEY AUTOINCREMENT,
-        #time TEXT NOT NULL,
-        #day INTEGER NOT NULL,
-        #month TEXT NOT NULL,
-        #teacher TEXT NOT NULL,
-        #''')
+
+
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS lessons (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id INTEGER NOT NULL,
+        booked_by INTEGER DEFAULT NULL,
+        time TEXT NOT NULL,
+        day INTEGER NOT NULL,
+        month INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        
+        FOREIGN KEY (booked_by) REFERENCES users (user_id)
+        FOREIGN KEY (teacher_id) REFERENCES users (user_id))
+        ''')
         cursor.close()
 
 
-    def add_in_bd(self, user_id, username = None, role = 'user', name=None):
+    def add_in_bd(self, user_id, chat_id, username = None, role = 'user', name=None, ):
         cursor = self.conn.cursor()
         cursor.execute('''
         SELECT user_id FROM users WHERE user_id = ?''', (user_id,))
         res = cursor.fetchone()
         if res is None:
             cursor.execute('''
-            INSERT INTO users (user_id, username, role, name) VALUES (?, ?, ?, ?)''', (user_id, username, role, name))
+            INSERT INTO users (user_id, username, role, name, chat_id) VALUES (?, ?, ?, ?, ?)''', (user_id, username, role, name, chat_id))
+            self.conn.commit()
+            cursor.close()
         else:
             cursor.execute('''
             UPDATE users SET role = ? WHERE user_id = ?''', (role, user_id))
@@ -125,10 +143,44 @@ class DBManager:
         self.conn.commit()
         cursor.close()
 
+    def get_action(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT action FROM users WHERE user_id = ?''', (user_id,))
+        result = cursor.fetchone()[0]
+        cursor.close()
+        return result
 
-    def add_days_in_bd(self, days):
+    def update_action(self, user_id, action):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT action FROM users WHERE user_id = ?''' ,(user_id,))
+        res = cursor.fetchone()
+        if res is None:
+            result = 'Ошибка. Не удалось обновить состояние'
+        elif res == action:
+            result = 'Состояние уже было нужным'
+        else:
+            cursor.execute('''
+            UPDATE users SET action = ? WHERE user_id = ?''', (action, user_id))
+            self.conn.commit()
+            cursor.close()
+            result = 'Успешно обновлено'
+        return result
+
+    def delete_action(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE users SET action = 'nothing' WHERE user_id = ?''', (user_id,))
+        self.conn.commit()
+        cursor.close()
+            
+
+
+
 
 
 
 db = DBManager('moto-school.db')
-
+#db.delete_table('users')
+#db.add_in_bd(1057854960, role = 'admin', chat_id=1057854960)

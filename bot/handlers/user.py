@@ -7,8 +7,8 @@ instructors = []
 def register_handlers_user(bot):
     @bot.message_handler(commands=['test'])
     def test(message):
-        db.add_in_bd(user_id=1, username='Vladimir', role='instructor', name='Vova')
-        db.add_in_bd(user_id=2, username='Alexander', role='instructor', name='Alex')
+        db.add_in_bd(user_id=1, username='Vladimir', role='instructor', name='Vova', chat_id = 1)
+        db.add_in_bd(user_id=2, username='Alexander', role='instructor', name='Alex', chat_id = 2)
 
 
     @bot.message_handler(commands=['start'])
@@ -24,7 +24,7 @@ def register_handlers_user(bot):
             bot.send_message(message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка', reply_markup = user_menu_keyboard())
         elif role is None:
             bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка!',reply_markup=user_menu_keyboard())
-            db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user')
+            db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user', chat_id = message.chat.id)
 
     @bot.message_handler(commands=['invite_code'])
     def invite_code(message):
@@ -51,11 +51,11 @@ def register_handlers_user(bot):
 
     def get_new_instructor_name(message):
         name = message.text
-        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='instructor', name=name)
+        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='instructor', name=name, chat_id = message.chat.id)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве инструктора')
 
     def get_new_admin_name(message):
         name = message.text
-        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name)
+        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name, chat_id = message.chat.id)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве админа')
 

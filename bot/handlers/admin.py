@@ -1,5 +1,5 @@
 from database.db_manager_sql import db
-from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, admin_add_keyboard
+from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, admin_add_keyboard, admin_cancel_keyboard
 from utils.invite_codes import generate_instructor_invite_code, generate_admin_invite_code
 
 def is_admin(message):
@@ -15,23 +15,34 @@ def register_handlers_admin(bot):
     def admin_handler(message):
         bot.send_message(message.chat.id, 'Админ-панель', reply_markup=admin_menu_keyboard())
 
+    @bot.message_handler(commands = ['get_action'])
+    def get_action(message):
+        bot.send_message(message.chat.id, text=db.get_action(message.from_user.id))
 
+    @bot.message_handler(func = lambda message: db.get_action(message.from_user.id) == 'wait_delete_user_id')
+    def wait_delete_user_id(message):
+        try:
+            result = db.delete_in_bd(int(message.text))
+            bot.send_message(message.chat.id, text=result)
+            db.delete_action(message.from_user.id)
+        except:
+            bot.send_message(message.chat.id, text='Неверный user_id, попробуйте еще раз',reply_markup = admin_cancel_keyboard())
 
 
 
 
 
 def register_callbacks_handlers_admin(bot):
-    def admin_delete_user_by_id(message):
-        result = db.delete_in_bd(int(message.text))
-        bot.send_message(message.chat.id, text=result)
-
 
     @bot.callback_query_handler(func=is_admin)
     def callback_handle_query(call):
         if call.data == 'admin_add_somebody':
             bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, "Какой ключ вы бы хотели создать?", reply_markup = admin_add_keyboard())
+        elif call.data == 'admin_cancel':
+            bot.answer_callback_query(call.id)
+            db.delete_action(call.from_user.id)
+            bot.send_message(call.message.chat.id, 'Действие отменено')
 
         elif call.data == 'admin_add_instructor':
             bot.answer_callback_query(call.id)
@@ -57,8 +68,8 @@ def register_callbacks_handlers_admin(bot):
 
         elif call.data == 'admin_delete_user':
             bot.answer_callback_query(call.id)
-            bot.send_message(call.message.chat.id, 'Введите user_id человека для удаления')
-            bot.register_next_step_handler(call.message, admin_delete_user_by_id)
+            bot.send_message(call.message.chat.id, 'Введите user_id человека для удаления', reply_markup = admin_cancel_keyboard())
+            db.update_action(call.from_user.id, 'wait_delete_user_id')
 
         elif 'delete' in call.data:
             if call.data == 'admin_delete_instructor':
