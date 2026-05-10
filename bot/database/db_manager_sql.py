@@ -64,7 +64,7 @@ class DBManager:
             cursor.close()
         else:
             cursor.execute('''
-            UPDATE users SET role = ? WHERE user_id = ?''', (role, user_id))
+            UPDATE users SET role = ?, name = ?, username = ?, WHERE user_id = ?''', (role, name, username, user_id))
             self.conn.commit()
             cursor.close()
 

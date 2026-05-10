@@ -29,33 +29,38 @@ def register_handlers_user(bot):
     @bot.message_handler(commands=['invite_code'])
     def invite_code(message):
         bot.send_message(message.chat.id, 'Введите ваш код приглашения')
-        bot.register_next_step_handler(message, get_invite_code)
+        db.update_action(message.from_user.id, 'wait_enter_invite_code')
 
 
 
+    @bot.message_handler(func = lambda message: db.get_action(message.from_user.id) == 'wait_enter_invite_code')
     def get_invite_code(message):
         code = message.text
         is_actual_code = db.activate_code(code)
         if is_actual_code:
             if code[0] == '0':
                 db.delete_code(code)
-                bot.register_next_step_handler(message, get_new_instructor_name)
+                db.update_action(message.from_user.id, 'wait_enter_instructor_name')
                 bot.send_message(message.chat.id, 'Введите ваше имя')
             elif code[0] == '1':
                 db.delete_code(code)
+                db.update_action(message.from_user.id, 'wait_enter_admin_name')
                 bot.send_message(message.chat.id, 'Введите ваше имя')
-                bot.register_next_step_handler(message, get_new_admin_name)
-
         else:
             bot.send_message(message.chat.id, 'Такого ключа не существует')
 
-    def get_new_instructor_name(message):
+
+    @bot.message_handler(func = lambda message: db.get_action(message.from_user.id) == 'wait_enter_instructor_name')
+    def wait_enter_instructor_name(message):
         name = message.text
-        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='instructor', name=name, chat_id = message.chat.id)
+        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='instructor', name=name,
+                     chat_id=message.chat.id)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве инструктора')
 
-    def get_new_admin_name(message):
+    @bot.message_handler(func = lambda message: db.get_action(message.from_user.id) == 'wait_enter_admin_name')
+    def wait_enter_admin_name(message):
         name = message.text
-        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name, chat_id = message.chat.id)
+        db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name,
+                     chat_id=message.chat.id)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве админа')
 
