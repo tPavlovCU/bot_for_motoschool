@@ -24,7 +24,8 @@ def register_handlers_user(bot):
             bot.send_message(message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка', reply_markup = user_menu_keyboard())
         elif role is None:
             bot.send_message(message.chat.id, 'Добро пожаловать в мотошколу Неваляшка!',reply_markup=user_menu_keyboard())
-            db.add_in_bd(message.from_user.id, message.from_user.username, role = 'user', chat_id = message.chat.id)
+            db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role = 'user', chat_id = message.chat.id)
+        db.update_action(message.from_user.id, 'nothing')
 
     @bot.message_handler(commands=['invite_code'])
     def invite_code(message):

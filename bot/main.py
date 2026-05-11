@@ -24,7 +24,7 @@ def main():
             @bot.message_handler(func=lambda msg: db.get_action(msg.from_user.id) == 'nothing')
             def other(message):
                 print('other message', message.text)
-                bot.send_message(message.chat.id, 'я вас не понял')
+                bot.send_message(message.chat.id, 'Я вас не понял')
 
             bot.infinity_polling()
         except:

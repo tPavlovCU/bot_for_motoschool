@@ -81,23 +81,29 @@ def month_menu_keyboard():
     markup = InlineKeyboardMarkup()
 
     december = InlineKeyboardButton("Декабрь", callback_data = 'month_december')
-    january = InlineKeyboardButton("Декабрь", callback_data='month_january')
-    february = InlineKeyboardButton("Декабрь", callback_data='month_february')
+    january = InlineKeyboardButton("Январь", callback_data='month_january')
+    february = InlineKeyboardButton("Февраль", callback_data='month_february')
 
-    march = InlineKeyboardButton("Декабрь", callback_data='month_march')
-    april = InlineKeyboardButton("Декабрь", callback_data='month_april')
-    may = InlineKeyboardButton("Декабрь", callback_data='month_may')
+    march = InlineKeyboardButton("Март", callback_data='month_march')
+    april = InlineKeyboardButton("Апрель", callback_data='month_april')
+    may = InlineKeyboardButton("Май", callback_data='month_may')
 
-    june = InlineKeyboardButton("Декабрь", callback_data='month_june')
-    july = InlineKeyboardButton("Декабрь", callback_data='month_july')
-    august = InlineKeyboardButton("Декабрь", callback_data='month_august')
+    june = InlineKeyboardButton("Июнь", callback_data='month_june')
+    july = InlineKeyboardButton("Июль", callback_data='month_july')
+    august = InlineKeyboardButton("Август", callback_data='month_august')
 
-    september = InlineKeyboardButton("Декабрь", callback_data='month_september')
-    october = InlineKeyboardButton("Декабрь", callback_data='month_october')
-    november = InlineKeyboardButton("Декабрь", callback_data='month_november')
+    september = InlineKeyboardButton("Сентябрь", callback_data='month_september')
+    october = InlineKeyboardButton("Октябрь", callback_data='month_october')
+    november = InlineKeyboardButton("Ноябрь", callback_data='month_november')
 
     markup.row(december,january,february)
     markup.row(march,april,may)
     markup.row(june,july,august)
     markup.row(september,october, november)
+    return markup
+
+def instructor_cancel_keyboard():
+    markup = InlineKeyboardMarkup()
+    btn = InlineKeyboardButton('Отмена', callback_data='instructor_cancel')
+    markup.row(btn)
     return markup

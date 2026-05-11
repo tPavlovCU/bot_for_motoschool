@@ -1,5 +1,7 @@
 from database.db_manager_sql import db
-from keyboards.inline import instructor_menu_keyboard, month_menu_keyboard
+from keyboards.inline import instructor_menu_keyboard, month_menu_keyboard, instructor_cancel_keyboard
+from utils.dates_handler import date_handler
+import json
 
 month_numbers = {
     'december':12,
@@ -25,33 +27,82 @@ def register_handlers_instructor(bot):
 
     @bot.message_handler(func=is_instructor, commands=['instructor_menu'])
     def instructor_menu(message):
-        bot.send_message(message.chat.id, 'Меню инструктора:', reply_markup=instructor_menu_keyboard)
+        bot.send_message(message.chat.id, 'Меню инструктора:', reply_markup=instructor_menu_keyboard())
 
-
-
-
-
-
-def register_callbacks_handlers_instructor(bot):
-    def get_year(message):
+    @bot.message_handler(func = lambda message: db.get_action(message.from_user.id) == 'wait_enter_year')
+    def wait_enter_year(message):
         year = message.text
         try:
             year = int(year)
-            bot.send_message(message.chat.id, 'Выберите месяц', reply_markup=month_menu_keyboard())
         except:
             bot.send_message(message.chat.id, 'Неверный формат, введите год в виде числа')
+
+        action_data = {'year': year}
+        data_string = json.dumps(action_data)
+        bot.send_message(message.chat.id, 'Выберите месяц', reply_markup=month_menu_keyboard())
+        db.add_action_data(message.from_user.id, data_string)
+        db.delete_action(message.from_user.id)
+
+    @bot.message_handler(func = lambda msg: db.get_action(msg.from_user.id) == 'wait_enter_day')
+    def wait_enter_day(message):
+        input_data = message.text
+        data = db.get_action_data(message.from_user.id)
+        data = json.loads(data)
+        data['day'] = input_data
+        new_data = json.dumps(data)
+        db.add_action_data(message.from_user.id, new_data)
+
+        db.update_action(message.from_user.id, 'wait_enter_time')
+        bot.send_message(message.chat.id, '''Введите рабочее время в формате:
+- 8-18(c 8 до 18 включительно)
+- 8,9,10''')
+
+    @bot.message_handler(func = lambda msg:db.get_action(msg.from_user.id) == 'wait_enter_time')
+    def wait_enter_time(message):
+        input_data = message.text
+        data = db.get_action_data(message.from_user.id)
+        data = json.loads(data)
+        data['time'] = input_data
+        print(data)
+        db.delete_action(message.from_user.id)
+        bot.send_message(message.chat.id, "Запись успешно открыта")
+
+
+def register_callbacks_handlers_instructor(bot):
 
 
     @bot.callback_query_handler(func=is_instructor)
     def callback_handler(call):
         if call.data == 'instructor_new_lessons':
             bot.answer_callback_query(call.id)
-            bot.send_message(call.message.chat.id, "Введите год в формате числа")
-            bot.register_next_step_handler(call.message, get_year)
+            bot.send_message(call.message.chat.id, "Введите год в формате числа", reply_markup=instructor_cancel_keyboard())
+            db.update_action(call.from_user.id, 'wait_enter_year')
+
+
+        elif call.data == 'instructor_cancel':
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, 'Действие отменено')
+            db.delete_action(call.from_user.id)
+
 
         elif call.data.startswith('month_'):
+            bot.answer_callback_query(call.id)
             month_str = call.data.replace('month_', '')
             month = month_numbers[month_str]
+            action_data_old = db.get_action_data(call.from_user.id)
+            action_data_new = json.loads(action_data_old)
+            action_data_new['month'] = month
+            action_data = json.dumps(action_data_new)
+            db.add_action_data(call.from_user.id, action_data)
+
+            bot.send_message(call.message.chat.id, '''Введите число/числа в формате: 
+- 15(только 15е число)
+- 10-15(все дни с 10го до 15го числа включительно)
+- 10- (все дни с 10го до конца месяца)
+- -10 (все дни с 1го до 10го включительно
+- 1,4,5-10(1е, 4е, c 5го до 10го включительно)
+- -(весь месяц)''')
+            db.update_action(call.from_user.id, 'wait_enter_day')
 
 
 

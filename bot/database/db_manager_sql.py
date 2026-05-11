@@ -24,7 +24,8 @@ class DBManager:
         role TEXT DEFAULT 'user',
         name TEXT DEFAULT NULL,
         chat_id TEXT NOT NULL,
-        action TEXT DEFAULT 'nothing')
+        action TEXT DEFAULT 'nothing',
+        action_data TEXT DEFAULT NULL)
         ''')
 
 
@@ -64,7 +65,7 @@ class DBManager:
             cursor.close()
         else:
             cursor.execute('''
-            UPDATE users SET role = ?, name = ?, username = ?, WHERE user_id = ?''', (role, name, username, user_id))
+            UPDATE users SET role = ?, name = ?, username = ? WHERE user_id = ?''', (role, name, username, user_id))
             self.conn.commit()
             cursor.close()
 
@@ -77,7 +78,6 @@ class DBManager:
         if result is None:
             return None
         return result[0]
-
 
     def get_all_role(self, role):
         cursor = self.conn.cursor()
@@ -105,7 +105,6 @@ class DBManager:
             print('Удалено человек -', deleted_rows)
             return None
 
-
     def get_in_bd(self, user_id):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -122,7 +121,6 @@ class DBManager:
         self.conn.commit()
         cursor.close()
 
-
     def activate_code(self, code):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -135,7 +133,6 @@ class DBManager:
         else:
             return True
 
-
     def delete_code(self, code):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -143,11 +140,16 @@ class DBManager:
         self.conn.commit()
         cursor.close()
 
+
     def get_action(self, user_id):
         cursor = self.conn.cursor()
         cursor.execute('''
         SELECT action FROM users WHERE user_id = ?''', (user_id,))
-        result = cursor.fetchone()[0]
+        result = cursor.fetchone()
+        if result:
+            result = result[0]
+        else:
+            result = None
         cursor.close()
         return result
 
@@ -174,10 +176,34 @@ class DBManager:
         UPDATE users SET action = 'nothing' WHERE user_id = ?''', (user_id,))
         self.conn.commit()
         cursor.close()
-            
 
 
+    def add_action_data(self, user_id, action_data):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE users SET action_data = ? WHERE user_id = ?''', (action_data, user_id))
+        self.conn.commit()
+        cursor.close()
 
+    def get_action_data(self,user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT action_data FROM users WHERE user_id = ?''', (user_id,))
+        result = cursor.fetchone()
+        if result:
+            result = result[0]
+        else:
+            result = None
+        return result
+        cursor.close()
+
+
+    def open_lesson(self, teacher_id, time, day, month, year):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        INSERT INTO lessons (teacher_id, time, day, month, year) VALUES (?, ?, ?, ?, ?)''',(teacher_id, time, day, month, year))
+        self.conn.commit()
+        cursor.close()
 
 
 
