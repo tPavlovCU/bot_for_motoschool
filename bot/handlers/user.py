@@ -1,8 +1,12 @@
 from database.db_manager_sql import db
 from keyboards.inline import user_menu_keyboard
 
-admins = ['Timofeeeey']
-instructors = []
+
+def is_user(message):
+    user_id = message.from_user.id
+    if db.get_role(user_id) == 'user':
+        return True
+    return False
 
 def register_handlers_user(bot):
     @bot.message_handler(commands=['test'])
@@ -64,4 +68,12 @@ def register_handlers_user(bot):
         db.add_in_bd(user_id=message.from_user.id, username=message.from_user.username, role='admin', name=name,
                      chat_id=message.chat.id)
         bot.send_message(message.chat.id, 'Вы успешно добавлены в качестве админа')
+
+
+def register_callbacks_handlers_user(bot):
+
+    @bot.callback_query_handler(func = is_user)
+    def callback(call):
+        if call.data == 'user_new_lesson':
+            pass
 

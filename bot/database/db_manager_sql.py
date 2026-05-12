@@ -208,5 +208,5 @@ class DBManager:
 
 
 db = DBManager('moto-school.db')
-#db.delete_table('users')
-#db.add_in_bd(1057854960, role = 'admin', chat_id=1057854960)
+#db.delete_table('lessons')
+#db.add_in_bd(1057854960, role = 'user', chat_id=1057854960)

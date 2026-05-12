@@ -9,8 +9,8 @@
       <change beforePath="$PROJECT_DIR$/bot/database/db_manager_sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/database/db_manager_sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/handlers/instructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/instructor.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/handlers/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/keyboards/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/keyboards/inline.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/utils/dates_handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/utils/dates_handler.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

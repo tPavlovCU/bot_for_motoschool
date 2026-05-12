@@ -20,6 +20,7 @@ def main():
             register_handlers_instructor(bot)
             register_callbacks_handlers_instructor(bot)
             register_callbacks_handlers_admin(bot)
+            register_callbacks_handlers_user(bot)
 
             @bot.message_handler(func=lambda msg: db.get_action(msg.from_user.id) == 'nothing')
             def other(message):

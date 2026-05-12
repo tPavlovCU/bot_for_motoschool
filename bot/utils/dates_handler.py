@@ -61,7 +61,6 @@ def date_handler(data):
     time_result = []
     time = time.replace(' ','')
     time_list = time.split(',')
-    print(time_list)
     for times in time_list:
         if times == '-':
             time_start = 0
@@ -88,8 +87,6 @@ def date_handler(data):
             flag = False
     time_result = list(set(time_result))
 
-    result = {year: year, month: month, day: days_result, time_result: time_result}
+    result = {'year': year, 'month': month, 'day': days_result, 'time': time_result}
     return result
 
-test_data = {'year': 2026, 'month': 1, 'day': '-', 'time': '12'}
-date_handler(test_data)

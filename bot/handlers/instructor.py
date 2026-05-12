@@ -63,9 +63,16 @@ def register_handlers_instructor(bot):
         data = db.get_action_data(message.from_user.id)
         data = json.loads(data)
         data['time'] = input_data
-        print(data)
         db.delete_action(message.from_user.id)
         bot.send_message(message.chat.id, "Запись успешно открыта")
+
+        good_data = date_handler(data)
+        days = good_data['day']
+        times = good_data['time']
+        teacher_id = message.from_user.id
+        for day in days:
+            for time in times:
+                db.open_lesson(teacher_id, time, day, data['month'], data['year'])
 
 
 def register_callbacks_handlers_instructor(bot):
