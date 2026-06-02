@@ -1,5 +1,6 @@
 import sqlite3 as sql
-import datetime
+from datetime import datetime
+import zoneinfo
 
 
 
@@ -197,6 +198,10 @@ class DBManager:
         return result
         cursor.close()
 
+    def delete_action_data(self, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE users SET action_data = NULL WHERE user_id = ?''', (user_id,))
 
     def open_lesson(self, teacher_id, time, day, month, year):
         cursor = self.conn.cursor()
@@ -207,6 +212,50 @@ class DBManager:
 
 
 
+    def get_instructors(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT teacher_id FROM lessons WHERE booked_by IS NULL''')
+        result = cursor.fetchall()
+        cursor.close()
+        res = []
+        for p in result:
+            res.append(p[0])
+        #print('res', res)
+        return list(set(res))
+
+    def get_name(self,user_id):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT name FROM users WHERE user_id = ?''', (user_id,))
+        result = cursor.fetchone()
+        if result is None:
+            return None
+        return result[0]
+
+    def get_instructor_days(self, instructor_id):
+        cursor = self.conn.cursor()
+        moscow_zone = zoneinfo.ZoneInfo("Europe/Moscow")
+        today = datetime.now(moscow_zone)
+        today_day = today.day
+        today_month = today.month
+        today_year = today.year
+        cursor.execute('''
+        SELECT day,month FROM lessons WHERE teacher_id = ? AND ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day > ?))''',
+                       (instructor_id, today_year, today_year, today_month, today_year, today_month, today_day))
+        result = list(cursor.fetchall())
+
+        cursor.close()
+        res = list(map(lambda x: x[0], result))
+        res = list(set(res))
+        print(res)
+        return res
+
+
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')
-#db.add_in_bd(1057854960, role = 'user', chat_id=1057854960)
+db.add_in_bd(1057854960, role = 'user', chat_id=1057854960)
+db.get_instructor_days(1057854960)
+
+#print(db.get_instructors())
+#print(db.get_name(db.get_instructors()[0]))

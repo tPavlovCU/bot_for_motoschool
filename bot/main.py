@@ -4,7 +4,7 @@ import os
 from database.db_manager_sql import db
 
 from handlers.admin import register_handlers_admin,register_callbacks_handlers_admin
-from handlers.user import register_handlers_user
+from handlers.user import register_handlers_user, register_callbacks_handlers_user
 from handlers.instructor import register_handlers_instructor, register_callbacks_handlers_instructor
 
 def main():

@@ -1,5 +1,5 @@
 from database.db_manager_sql import db
-from keyboards.inline import user_menu_keyboard
+from keyboards.inline import *
 
 
 def is_user(message):
@@ -75,5 +75,16 @@ def register_callbacks_handlers_user(bot):
     @bot.callback_query_handler(func = is_user)
     def callback(call):
         if call.data == 'user_new_lesson':
-            pass
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, "Выберите инструктора:", reply_markup=user_select_instructor())
 
+        elif call.data.startswith('user_select_instructor_'):
+            bot.answer_callback_query(call.id)
+            instructor_id = call.data.replace('user_select_instructor_', '')
+            instructor_id = int(instructor_id)
+            instructor_name = db.get_name(instructor_id)
+            if instructor_id == -1:
+                bot.send_message(call.message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка',
+                                 reply_markup=user_menu_keyboard())
+            else:
+                bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor())

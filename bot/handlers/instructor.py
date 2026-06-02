@@ -73,7 +73,7 @@ def register_handlers_instructor(bot):
         for day in days:
             for time in times:
                 db.open_lesson(teacher_id, time, day, data['month'], data['year'])
-
+        db.clear_action_data(message.from_user.id)
 
 def register_callbacks_handlers_instructor(bot):
 
