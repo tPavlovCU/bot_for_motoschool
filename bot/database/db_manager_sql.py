@@ -240,21 +240,23 @@ class DBManager:
         today_day = today.day
         today_month = today.month
         today_year = today.year
+        print(today_day, today_month, today_year)
         cursor.execute('''
-        SELECT day,month FROM lessons WHERE teacher_id = ? AND ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day > ?))''',
+        SELECT DISTINCT day,month,year FROM lessons WHERE booked_by IS NULL AND teacher_id = ? AND ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day > ?))''',
                        (instructor_id, today_year, today_year, today_month, today_year, today_month, today_day))
         result = list(cursor.fetchall())
 
         cursor.close()
-        res = list(map(lambda x: x[0], result))
-        res = list(set(res))
+        res = []
+        for t in result:
+            res.append([t[0],t[1],t[2]])
         print(res)
         return res
 
 
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')
-db.add_in_bd(1057854960, role = 'user', chat_id=1057854960)
+db.add_in_bd(1057854960, role = 'instructor', chat_id=1057854960)
 db.get_instructor_days(1057854960)
 
 #print(db.get_instructors())

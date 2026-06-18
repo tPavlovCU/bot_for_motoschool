@@ -8,9 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/database/db_manager_sql.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/database/db_manager_sql.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bot/handlers/instructor.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/instructor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/handlers/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/handlers/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/keyboards/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/keyboards/inline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,5 +126,16 @@
       <updated>1775951693869</updated>
     </task>
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
