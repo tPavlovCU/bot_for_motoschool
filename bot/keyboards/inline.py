@@ -1,5 +1,6 @@
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from database.db_manager_sql import db
+from utils.dates_handler import to_group
 from datetime import datetime
 
 def month_menu_keyboard():
@@ -109,7 +110,8 @@ def user_menu_keyboard():
 
 def user_select_instructor():
     markup = InlineKeyboardMarkup()
-    instructors = db.get_all_role('instructor')
+    instructors = db.get_instructors()
+    a = instructors[0]
 
     for instructor in instructors:
         button = InlineKeyboardButton(f'{instructor['name']} (@{instructor['username']})',
@@ -120,9 +122,35 @@ def user_select_instructor():
     markup.row(cancel_button)
     return markup
 
-def user_select_day_instructor(instructor_id):
+def user_select_day_instructor(instructor_id, page=0):
+    week = {0: "Понедельник", 1: "Вторник", 2: "Среда", 3: "Четверг", 4: "Пятница", 5: "Суббота", 6: "Воскресенье"}
     markup = InlineKeyboardMarkup()
     days = db.get_instructor_days(instructor_id)
-    print(days)
+    grouped_days = to_group(days, 5)
+    max_pages = len(grouped_days)
+
+    page_data = grouped_days[page]
+    for day in page_data:
+        date_string = f'{day[0]}/{day[1]}/{day[2]}'
+        date_day = datetime.strptime(date_string, '%d/%m/%Y')
+        day_month_year = date_string.split('/')
+        day_month_year = list(map(lambda x: str(x).zfill(2), day_month_year))
+        week_day = week[date_day.weekday()]
+        btn = InlineKeyboardButton(f'{day_month_year[0]}.{day_month_year[1]}.{day_month_year[2]} ({week_day})', callback_data=f'user_select_instructor_day_{date_string}_{instructor_id}')
+        markup.row(btn)
+
+
+    btn_next = InlineKeyboardButton('>>', callback_data='user_select_instructor_day_next_page')
+    btn_last = InlineKeyboardButton('<<', callback_data='user_select_instructor_day_last_page')
+    btn_nthg = InlineKeyboardButton('==', callback_data='nothing')
+
+    markup.row(btn_last, btn_nthg, btn_next)
+
+    cancel_button = InlineKeyboardButton('Отмена', callback_data='user_select_instructor_-1')
+    markup.row(cancel_button)
+    return markup
+
+
+
 
 

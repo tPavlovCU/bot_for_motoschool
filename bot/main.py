@@ -27,6 +27,11 @@ def main():
                 print('other message', message.text)
                 bot.send_message(message.chat.id, 'Я вас не понял')
 
+            @bot.callback_query_handler()
+            def callback(call):
+                if call.data == 'nothing':
+                    bot.answer_callback_query(call.id)
+
             bot.infinity_polling()
         except:
             print('Failed to connect to Telegram API')

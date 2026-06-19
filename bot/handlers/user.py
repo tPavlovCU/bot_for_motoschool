@@ -78,7 +78,7 @@ def register_callbacks_handlers_user(bot):
             bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, "Выберите инструктора:", reply_markup=user_select_instructor())
 
-        elif call.data.startswith('user_select_instructor_'):
+        elif call.data.startswith('user_select_instructor_') and not call.data.startswith('user_select_instructor_day'):
             bot.answer_callback_query(call.id)
             instructor_id = call.data.replace('user_select_instructor_', '')
             instructor_id = int(instructor_id)
@@ -87,4 +87,11 @@ def register_callbacks_handlers_user(bot):
                 bot.send_message(call.message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка',
                                  reply_markup=user_menu_keyboard())
             else:
-                bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor())
+                bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor(instructor_id))
+        elif call.data.startswith('user_select_instructor_day'):
+            bot.answer_callback_query(call.id)
+            date, instructor_id = (call.data.replace('user_select_instructor_day_', '')).split('_')
+
+            db.get_instructor_time(instructor_id, date)
+
+

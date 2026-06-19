@@ -1,6 +1,6 @@
 from database.db_manager_sql import db
 from keyboards.inline import instructor_menu_keyboard, month_menu_keyboard, instructor_cancel_keyboard
-from utils.dates_handler import date_handler
+from utils.dates_handler import date_handler, to_group
 import json
 
 month_numbers = {

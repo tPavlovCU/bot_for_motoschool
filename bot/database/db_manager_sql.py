@@ -109,7 +109,7 @@ class DBManager:
     def get_in_bd(self, user_id):
         cursor = self.conn.cursor()
         cursor.execute('''
-        SELECT username, name FROM users WHERE user_id = ?''', (user_id,))
+        SELECT user_id, username, name FROM users WHERE user_id = ?''', (user_id,))
         result = cursor.fetchone()
         cursor.close()
         return result
@@ -215,14 +215,18 @@ class DBManager:
     def get_instructors(self):
         cursor = self.conn.cursor()
         cursor.execute('''
-        SELECT teacher_id FROM lessons WHERE booked_by IS NULL''')
+        SELECT DISTINCT teacher_id FROM lessons WHERE booked_by IS NULL''')
         result = cursor.fetchall()
         cursor.close()
         res = []
         for p in result:
             res.append(p[0])
-        #print('res', res)
-        return list(set(res))
+
+        result = []
+        for teacher_id in res:
+            info = db.get_in_bd(teacher_id)
+            result.append(info)
+        return result
 
     def get_name(self,user_id):
         cursor = self.conn.cursor()
@@ -240,7 +244,6 @@ class DBManager:
         today_day = today.day
         today_month = today.month
         today_year = today.year
-        print(today_day, today_month, today_year)
         cursor.execute('''
         SELECT DISTINCT day,month,year FROM lessons WHERE booked_by IS NULL AND teacher_id = ? AND ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day > ?))''',
                        (instructor_id, today_year, today_year, today_month, today_year, today_month, today_day))
@@ -250,14 +253,26 @@ class DBManager:
         res = []
         for t in result:
             res.append([t[0],t[1],t[2]])
-        print(res)
         return res
 
+    def get_instructor_time(self, instructor_id, date):
+        day, month, year = date.split('/')
+
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        SELECT DISTINCT time FROM lessons WHERE booked_by is NULL AND day = ? AND month = ? AND year = ? AND teacher_id = ?''',(day, month, year, instructor_id))
+        result = cursor.fetchall()
+        result = list(result)
+        result = list(map(lambda x: x[0], result))
+        return result
+
+    def book_lesson(self, instructor_id, user_id, date):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE lessons SET booked_by = ? WHERE teacher_id = ?''', (user_id, instructor_id))
+        self.conn.commit()
+        cursor.close()
 
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')
-db.add_in_bd(1057854960, role = 'instructor', chat_id=1057854960)
-db.get_instructor_days(1057854960)
-
-#print(db.get_instructors())
-#print(db.get_name(db.get_instructors()[0]))
+db.add_in_bd(1057854960, role = 'user', chat_id=1057854960, name='tim', username='timofey')

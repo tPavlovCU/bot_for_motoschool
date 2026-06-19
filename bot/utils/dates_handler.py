@@ -90,3 +90,17 @@ def date_handler(data):
     result = {'year': year, 'month': month, 'day': days_result, 'time': time_result}
     return result
 
+def to_group(data, group_size):
+    res = []
+    now = []
+    size_now = 0
+    for t in data:
+        now.append(t)
+        size_now += 1
+        if size_now == group_size:
+            res.append(now)
+            now = []
+            size_now = 0
+    if size_now > 0:
+        res.append(now)
+    return res
