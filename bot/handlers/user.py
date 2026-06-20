@@ -78,7 +78,7 @@ def register_callbacks_handlers_user(bot):
             bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, "Выберите инструктора:", reply_markup=user_select_instructor())
 
-        elif call.data.startswith('user_select_instructor_') and not call.data.startswith('user_select_instructor_day'):
+        elif call.data.startswith('user_select_instructor_') and not call.data.startswith('user_select_instructor_day') and not call.data.startswith('user_select_instructor_time'):
             bot.answer_callback_query(call.id)
             instructor_id = call.data.replace('user_select_instructor_', '')
             instructor_id = int(instructor_id)
@@ -88,10 +88,34 @@ def register_callbacks_handlers_user(bot):
                                  reply_markup=user_menu_keyboard())
             else:
                 bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor(instructor_id))
-        elif call.data.startswith('user_select_instructor_day'):
+        elif call.data.startswith('user_select_instructor_day') and not call.data.startswith('user_select_instructor_time'):
             bot.answer_callback_query(call.id)
             date, instructor_id = (call.data.replace('user_select_instructor_day_', '')).split('_')
 
-            db.get_instructor_time(instructor_id, date)
+            time = db.get_instructor_time(instructor_id, date)
 
 
+            bot.send_message(call.message.chat.id, "Выберите время:", reply_markup = user_select_instructor_time(time, date, instructor_id))
+
+        elif call.data.startswith('user_select_instructor_time_'):
+            bot.answer_callback_query(call.id)
+            data = call.data.replace('user_select_instructor_time_', '')
+            date, instructor_id = (data).split('_')
+            db.book_lesson(instructor_id, call.from_user.id, date)
+            bot.send_message(call.message.chat.id, "Успешная запись")
+            bot.send_message(call.message.chat.id, 'Меню',
+                             reply_markup=user_menu_keyboard())
+
+        elif call.data == 'user_cancel_lesson':
+            bot.answer_callback_query(call.id)
+
+            bot.send_message(call.message.chat.id, 'Какое занятие Вы бы хотели отменить?', reply_markup = user_cancel_lesson(call.from_user.id))
+
+        elif call.data.startswith('user_cancel_lesson_'):
+            data = call.data.replace('user_cancel_lesson_', '')
+            date, instructor_id = (data).split('_')
+            time, day, month, year = date.split('/')
+            db.cancel_lesson(instructor_id, time, day, month, year)
+            bot.send_message(call.message.chat.id, "Занятие отменено")
+            bot.send_message(call.message.chat.id, 'Меню',
+                             reply_markup=user_menu_keyboard())

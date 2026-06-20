@@ -266,10 +266,35 @@ class DBManager:
         result = list(map(lambda x: x[0], result))
         return result
 
-    def book_lesson(self, instructor_id, user_id, date):
+    def get_active_lessons(self, user_id):
+        moscow_zone = zoneinfo.ZoneInfo("Europe/Moscow")
+        today = datetime.now(moscow_zone)
+        today_day = today.day
+        today_month = today.month
+        today_year = today.year
         cursor = self.conn.cursor()
         cursor.execute('''
-        UPDATE lessons SET booked_by = ? WHERE teacher_id = ?''', (user_id, instructor_id))
+        SELECT teacher_id, time, day, month, year FROM lessons WHERE booked_by = ? AND ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day >= ?))''',
+                       (user_id, today_year, today_year, today_month, today_year, today_month, today_day))
+        result = cursor.fetchall()
+        cursor.close()
+        return result
+
+
+    def book_lesson(self, instructor_id, user_id, date):
+        time, day, month, year = date.split('/')
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE lessons SET booked_by = ? WHERE teacher_id = ? AND time = ? AND day = ? AND month = ? AND year = ?''',
+                       (user_id, instructor_id, time, day, month, year))
+        self.conn.commit()
+        cursor.close()
+
+
+    def cancel_lesson(self, instructor_id, time, day, month, year):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        UPDATE lessons SET booked_by = NULL WHERE time = ? AND day = ? AND month = ? AND year = ?''', (time, day, month, year))
         self.conn.commit()
         cursor.close()
 

@@ -150,6 +150,35 @@ def user_select_day_instructor(instructor_id, page=0):
     markup.row(cancel_button)
     return markup
 
+def user_select_instructor_time(time, date, instructor_id):
+    grouped = to_group(time, 4)
+    markup = InlineKeyboardMarkup()
+    for group in grouped:
+        group_res = []
+
+        for hour in group:
+            btn = InlineKeyboardButton(hour, callback_data = f'user_select_instructor_time_{hour}/{date}_{instructor_id}')
+            group_res.append(btn)
+        markup.row(*group_res)
+
+    cancel_button = InlineKeyboardButton('Отмена', callback_data='user_select_instructor_-1')
+    markup.row(cancel_button)
+    return markup
+
+def user_cancel_lesson(user_id):
+    markup = InlineKeyboardMarkup()
+    lessons = db.get_active_lessons(user_id)
+
+    for lesson in lessons:
+        teacher_name = db.get_name(lesson['teacher_id'])
+        btn_text = f'{lesson['day']}.{lesson['month']}.{lesson['year']} {lesson['time']}:00 {teacher_name}'
+        date = f'{lesson['time']}/{lesson['day']}/{lesson['month']}/{lesson['year']}'
+        btn = InlineKeyboardButton(btn_text, callback_data=f'user_cancel_lesson_{date}_{lesson['teacher_id']}')
+        markup.row(btn)
+
+    cancel_button = InlineKeyboardButton('Назад', callback_data='user_select_instructor_-1')
+    markup.row(cancel_button)
+    return markup
 
 
 
