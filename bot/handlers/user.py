@@ -1,6 +1,6 @@
 from database.db_manager_sql import db
 from keyboards.inline import *
-
+import json
 
 def is_user(message):
     user_id = message.from_user.id
@@ -87,13 +87,14 @@ def register_callbacks_handlers_user(bot):
                 bot.send_message(call.message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка',
                                  reply_markup=user_menu_keyboard())
             else:
-                bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor(instructor_id))
-        elif call.data.startswith('user_select_instructor_day') and not call.data.startswith('user_select_instructor_time'):
+                bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor(instructor_id, call.from_user.id))
+
+        elif call.data.startswith('user_select_instructor_day') and not call.data.startswith('user_select_instructor_time') and \
+            not call.data.startswith('user_select_instructor_day_next_page') and not call.data.startswith('user_select_instructor_day_last_page'):
             bot.answer_callback_query(call.id)
             date, instructor_id = (call.data.replace('user_select_instructor_day_', '')).split('_')
 
             time = db.get_instructor_time(instructor_id, date)
-
 
             bot.send_message(call.message.chat.id, "Выберите время:", reply_markup = user_select_instructor_time(time, date, instructor_id))
 
@@ -119,3 +120,46 @@ def register_callbacks_handlers_user(bot):
             bot.send_message(call.message.chat.id, "Занятие отменено")
             bot.send_message(call.message.chat.id, 'Меню',
                              reply_markup=user_menu_keyboard())
+
+        elif call.data == 'user_select_instructor_day_next_page':
+            bot.answer_callback_query(call.id)
+
+            action_data_json = db.get_action_data(user_id=call.from_user.id)
+            action_data = json.loads(action_data_json)
+
+            last_page = action_data['last_page']
+            max_pages = action_data['max_pages']
+            instructor_id = action_data['instructor_id']
+            instructor_name = db.get_name(instructor_id)
+
+            if last_page + 1 >= max_pages:
+                pass
+            else:
+                markup = user_select_day_instructor(instructor_id, call.from_user.id, last_page + 1)
+                try:
+                    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=markup)
+
+                except:
+                    bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:", reply_markup=user_select_day_instructor(instructor_id, call.from_user.id, page = last_page + 1))
+
+        elif call.data == 'user_select_instructor_day_last_page':
+            bot.answer_callback_query(call.id)
+
+            action_data_json = db.get_action_data(user_id=call.from_user.id)
+            action_data = json.loads(action_data_json)
+
+            last_page = action_data['last_page']
+            instructor_id = action_data['instructor_id']
+            instructor_name = db.get_name(instructor_id)
+
+            if last_page < 1:
+                pass
+            else:
+                markup = user_select_day_instructor(instructor_id, call.from_user.id, last_page - 1)
+                try:
+                    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=markup)
+
+                except:
+                    bot.send_message(call.message.chat.id, f"Выбран инструктор {instructor_name}, выберите день:",
+                                     reply_markup=user_select_day_instructor(instructor_id, call.from_user.id,
+                                                                             page=last_page - 1))

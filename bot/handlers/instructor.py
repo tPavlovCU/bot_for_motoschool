@@ -85,6 +85,8 @@ def register_callbacks_handlers_instructor(bot):
             bot.send_message(call.message.chat.id, "Введите год в формате числа", reply_markup=instructor_cancel_keyboard())
             db.update_action(call.from_user.id, 'wait_enter_year')
 
+        elif call.data == 'instructor_cancel_lesson':
+
 
         elif call.data == 'instructor_cancel':
             bot.answer_callback_query(call.id)

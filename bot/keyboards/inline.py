@@ -2,6 +2,7 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from database.db_manager_sql import db
 from utils.dates_handler import to_group
 from datetime import datetime
+import json
 
 def month_menu_keyboard():
     markup = InlineKeyboardMarkup()
@@ -122,14 +123,22 @@ def user_select_instructor():
     markup.row(cancel_button)
     return markup
 
-def user_select_day_instructor(instructor_id, page=0):
+def user_select_day_instructor(instructor_id, user_id, page=0):
     week = {0: "Понедельник", 1: "Вторник", 2: "Среда", 3: "Четверг", 4: "Пятница", 5: "Суббота", 6: "Воскресенье"}
     markup = InlineKeyboardMarkup()
     days = db.get_instructor_days(instructor_id)
     grouped_days = to_group(days, 5)
     max_pages = len(grouped_days)
 
-    page_data = grouped_days[page]
+    action_data = {'last_page': page, 'max_pages': max_pages, 'instructor_id': instructor_id, 'user_id': user_id}
+    db.update_action_data(user_id, action_data)
+
+
+    try:
+        page_data = grouped_days[page]
+    except:
+        print(grouped_days, page, max_pages)
+
     for day in page_data:
         date_string = f'{day[0]}/{day[1]}/{day[2]}'
         date_day = datetime.strptime(date_string, '%d/%m/%Y')
@@ -179,7 +188,6 @@ def user_cancel_lesson(user_id):
     cancel_button = InlineKeyboardButton('Назад', callback_data='user_select_instructor_-1')
     markup.row(cancel_button)
     return markup
-
 
 
 

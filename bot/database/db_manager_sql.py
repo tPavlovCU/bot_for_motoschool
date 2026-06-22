@@ -1,6 +1,7 @@
 import sqlite3 as sql
 from datetime import datetime
 import zoneinfo
+import json
 
 
 
@@ -186,6 +187,24 @@ class DBManager:
         self.conn.commit()
         cursor.close()
 
+    def update_action_data(self, user_id, action_data):
+        cursor = self.conn.cursor()
+        old_data_json = db.get_action_data(user_id)
+        if old_data_json is None:
+            db.add_action_data(user_id, json.dumps(action_data))
+
+        else:
+            old_data = json.loads(old_data_json)
+            for key in action_data:
+                value = action_data[key]
+                old_data[key] = value
+            new_data = json.dumps(old_data)
+            cursor.execute('''
+            UPDATE users SET action_data = ? WHERE user_id = ?''', (new_data, user_id))
+        self.conn.commit()
+        cursor.close()
+
+
     def get_action_data(self,user_id):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -195,8 +214,9 @@ class DBManager:
             result = result[0]
         else:
             result = None
-        return result
         cursor.close()
+        return result
+
 
     def delete_action_data(self, user_id):
         cursor = self.conn.cursor()
@@ -294,10 +314,10 @@ class DBManager:
     def cancel_lesson(self, instructor_id, time, day, month, year):
         cursor = self.conn.cursor()
         cursor.execute('''
-        UPDATE lessons SET booked_by = NULL WHERE time = ? AND day = ? AND month = ? AND year = ?''', (time, day, month, year))
+        UPDATE lessons SET booked_by = NULL WHERE time = ? AND day = ? AND month = ? AND year = ? AND teacher_id = ?''', (time, day, month, year, instructor_id))
         self.conn.commit()
         cursor.close()
 
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')
-db.add_in_bd(1057854960, role = 'user', chat_id=1057854960, name='tim', username='timofey')
+db.add_in_bd(1057854960, role = 'instructor', chat_id=1057854960, name='tim', username='timofey')
