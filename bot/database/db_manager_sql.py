@@ -300,6 +300,20 @@ class DBManager:
         cursor.close()
         return result
 
+    def get_active_lessons_teacher(self, teacher_id):
+        cursor = self.conn.cursor()
+        moscow_zone = zoneinfo.ZoneInfo("Europe/Moscow")
+        today = datetime.now(moscow_zone)
+        today_day = today.day
+        today_month = today.month
+        today_year = today.year
+        cursor.execute('''
+        SELECT booked_by, time, day, month, year FROM lessons WHERE teacher_id = ? AND booked_by IS NOT NULL AND
+        ((year > ?) OR (year = ? AND month > ?) OR (year = ? AND month = ? AND day >= ?))''', (teacher_id, today_year, today_year, today_month, today_year, today_month, today_day))
+        result = cursor.fetchall()
+        cursor.close()
+        return result
+
 
     def book_lesson(self, instructor_id, user_id, date):
         time, day, month, year = date.split('/')
@@ -317,6 +331,23 @@ class DBManager:
         UPDATE lessons SET booked_by = NULL WHERE time = ? AND day = ? AND month = ? AND year = ? AND teacher_id = ?''', (time, day, month, year, instructor_id))
         self.conn.commit()
         cursor.close()
+
+
+    def delete_lesson(self, instructor_id, time, day, month, year):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        DELETE FROM lessons WHERE time = ? AND day = ? AND month = ? AND year = ? AND teacher_id = ?''',(time, day, month, year, instructor_id))
+        self.conn.commit()
+        cursor.close()
+
+    def get_lesson_booked_by(self, teacher_id, time, day, month, year):
+        cursor = self.conn.cursor()
+        print(teacher_id, time, day, month, year)
+        cursor.execute('''
+        SELECT booked_by FROM lessons WHERE teacher_id = ? AND time = ? AND day = ? AND month = ? AND year = ?''', (teacher_id, time, day, month, year))
+        result = cursor.fetchone()
+        cursor.close()
+        return result[0]
 
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')

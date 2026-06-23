@@ -1,5 +1,5 @@
 from database.db_manager_sql import db
-from keyboards.inline import instructor_menu_keyboard, month_menu_keyboard, instructor_cancel_keyboard
+from keyboards.inline import *
 from utils.dates_handler import date_handler, to_group
 import json
 
@@ -86,7 +86,7 @@ def register_callbacks_handlers_instructor(bot):
             db.update_action(call.from_user.id, 'wait_enter_year')
 
         elif call.data == 'instructor_cancel_lesson':
-
+            bot.send_message(call.message.chat.id, f"Какой урок вы бы хотели отменить?", reply_markup=instructor_cancel_lesson(call.from_user.id))
 
         elif call.data == 'instructor_cancel':
             bot.answer_callback_query(call.id)
@@ -113,5 +113,17 @@ def register_callbacks_handlers_instructor(bot):
 - -(весь месяц)''')
             db.update_action(call.from_user.id, 'wait_enter_day')
 
+        elif call.data.startswith('instructor_cancel_lesson_'):
+            bot.answer_callback_query(call.id)
+
+            data = call.data.replace('instructor_cancel_lesson_', '')
+
+            date, teacher_id = data.split('_')
+            time, day, month, year = date.split('/')
 
 
+            booked_by = db.get_lesson_booked_by(teacher_id, time, day, month, year)
+            db.delete_lesson(teacher_id, time, day, month, year)
+
+            bot.send_message(call.message.chat.id, 'Урок успешно отменен')
+            bot.send_message(booked_by, f'Ваш урок {time}:00 {day}.{month}.{year} был отменен инструктором', reply_markup=user_menu_keyboard())
