@@ -95,8 +95,16 @@ class DBManager:
         cursor.execute('''
         DELETE FROM users WHERE user_id = ?''', (user_id,))
         deleted_rows = cursor.rowcount
-
         self.conn.commit()
+
+        cursor.execute('''
+        DELETE FROM lessons WHERE teacher_id = ?''', (user_id,))
+        self.conn.commit()
+
+        cursor.execute('''
+        UPDATE lessons SET booked_by = NULL WHERE booked_by = ?''', (user_id,))
+        self.conn.commit()
+
         cursor.close()
 
         if deleted_rows == 1:

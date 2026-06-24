@@ -1,5 +1,5 @@
 from database.db_manager_sql import db
-from keyboards.inline import admin_menu_keyboard, admin_delete_instructor_keyboard, admin_delete_instructor_confirm, admin_add_keyboard, admin_cancel_keyboard
+from keyboards.inline import *
 from utils.invite_codes import generate_instructor_invite_code, generate_admin_invite_code
 
 def is_admin(message):
@@ -71,6 +71,10 @@ def register_callbacks_handlers_admin(bot):
             bot.send_message(call.message.chat.id, 'Введите user_id человека для удаления', reply_markup = admin_cancel_keyboard())
             db.update_action(call.from_user.id, 'wait_delete_user_id')
 
+        elif call.data == 'admin_edit_instructor':
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, 'Выберите инструктора', reply_markup = admin_edit_instructor_keyboard())
+
         elif 'delete' in call.data:
             if call.data == 'admin_delete_instructor':
                 bot.answer_callback_query(call.id)
@@ -102,4 +106,32 @@ def register_callbacks_handlers_admin(bot):
                 bot.send_message(call.message.chat.id, 'Удаление отменено')
                 bot.send_message(call.message.chat.id, 'Админ-панель', reply_markup=admin_menu_keyboard())
 
+        elif call.data.startswith('admin_edit_instructor_'):
+            bot.answer_callback_query(call.id)
+            instructor_id = int(call.data.replace('admin_edit_instructor_', ''))
+            info = db.get_in_bd(instructor_id)
+            name = info['name']
+            username = info['username']
+
+            bot.send_message(call.message.chat.id, f"Выбран инструктор {name} (@{username}). Что вы хотите сделать?", reply_markup = admin_edit_select_action_instructor_keyboard(instructor_id))
+
+        elif call.data.startswith('admin_edit_cancel_'):
+            bot.answer_callback_query(call.id)
+            instructor_id = int(call.data.replace('admin_edit_cancel_', ''))
+
+            bot.send_message(call.message.chat.id, "Какой урок вы бы хотели отменить?", reply_markup = admin_cancel_lesson(instructor_id))
+
+        elif call.data.startswith('admin_edit_lesson_'):
+            bot.answer_callback_query(call.id)
+            print(call.data)
+            date, teacher_id = call.data.replace('admin_edit_lesson_cancel_', '').split('_')
+
+            time, day, month, year = date.split('/')
+
+            booked_by = db.get_lesson_booked_by(teacher_id, time, day, month, year)
+            db.delete_lesson(teacher_id, time, day, month, year)
+
+            bot.send_message(call.message.chat.id, 'Урок успешно отменен')
+            bot.send_message(booked_by, f'Ваш урок {time}:00 {day}.{month}.{year} был отменен администратором',
+                             reply_markup=user_menu_keyboard())
 

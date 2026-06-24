@@ -51,6 +51,7 @@ def date_handler(data):
             flag = True
         else:
             days_result.append(int(days))
+            flag = False
         if flag:
             for smt in range(days_start, days_end + 1):
                 days_result.append(smt)
@@ -80,14 +81,14 @@ def date_handler(data):
             flag = True
         else:
             time_result.append(int(times))
-
+            flag = False
         if flag:
             for smt in range(time_start, time_end + 1):
                 time_result.append(smt)
-            flag = False
     time_result = list(set(time_result))
 
     result = {'year': year, 'month': month, 'day': days_result, 'time': time_result}
+    print(result)
     return result
 
 def to_group(data, group_size):

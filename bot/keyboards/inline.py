@@ -54,6 +54,28 @@ def admin_delete_instructor_keyboard():
 
     return markup
 
+def admin_edit_instructor_keyboard():
+    markup = InlineKeyboardMarkup()
+    instructors = db.get_all_role('instructor')
+
+    for instructor in instructors:
+        button = InlineKeyboardButton(f'{instructor['name']} (@{instructor['username']})',
+                                      callback_data=f'admin_edit_instructor_{instructor['user_id']}')
+        markup.row(button)
+
+    return markup
+
+def admin_edit_select_action_instructor_keyboard(instructor_id):
+    markup = InlineKeyboardMarkup()
+    button_cancel = InlineKeyboardButton('Отменить занятие', callback_data = f'admin_edit_cancel_{instructor_id}')
+    button_move = InlineKeyboardButton('Перенести занятие', callback_data = f'admin_edit_move_{instructor_id}')
+
+    markup.row(button_cancel)
+    markup.row(button_move)
+    return markup
+
+
+
 def admin_delete_instructor_confirm(call):
     user_id = call.data.replace('admin_delete_','')
 
@@ -77,6 +99,27 @@ def admin_cancel_keyboard():
     markup = InlineKeyboardMarkup()
     btn = InlineKeyboardButton('Отмена', callback_data='admin_cancel')
     markup.row(btn)
+    return markup
+
+def admin_cancel_lesson(teacher_id):
+    markup = InlineKeyboardMarkup()
+    lessons = db.get_active_lessons_teacher(teacher_id)
+
+
+    for lesson in lessons:
+        time = lesson['time']
+        day = lesson['day']
+        month = lesson['month']
+        year = lesson['year']
+
+        date = f'{time}/{day}/{month}/{year}'
+
+        btn = InlineKeyboardButton(f"{time}:00 {day}.{month}.{year}", callback_data = f'admin_edit_lesson_cancel_{date}_{teacher_id}')
+        markup.row(btn)
+
+        btn = InlineKeyboardButton('Отмена', callback_data='admin_cancel')
+        markup.row(btn)
+
     return markup
 
 
@@ -206,6 +249,3 @@ def instructor_cancel_lesson(teacher_id):
         markup.row(btn)
 
     return markup
-
-
-
