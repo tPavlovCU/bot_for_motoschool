@@ -249,3 +249,25 @@ def instructor_cancel_lesson(teacher_id):
         markup.row(btn)
 
     return markup
+
+
+def admin_select_move_lesson(teacher_id):
+    markup = InlineKeyboardMarkup()
+    lessons = db.get_active_lessons_teacher(teacher_id)
+
+    for lesson in lessons:
+        time = lesson['time']
+        day = lesson['day']
+        month = lesson['month']
+        year = lesson['year']
+
+        date = f'{time}/{day}/{month}/{year}'
+
+        btn = InlineKeyboardButton(f"{time}:00 {day}.{month}.{year}",
+                                   callback_data=f'admin_edit_lesson_move_{date}_{teacher_id}')
+        markup.row(btn)
+
+        btn = InlineKeyboardButton('Отмена', callback_data='admin_cancel')
+        markup.row(btn)
+
+    return markup

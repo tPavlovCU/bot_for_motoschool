@@ -28,7 +28,20 @@ def register_handlers_admin(bot):
         except:
             bot.send_message(message.chat.id, text='Неверный user_id, попробуйте еще раз',reply_markup = admin_cancel_keyboard())
 
+    @bot.message_handler(func=lambda message: db.get_action(message.from_user.id).startswith('admin_move_lesson_wait_date_')
+    def admin_move_lesson_wait_date(message):
+        action = db.get_action(message.from_user.id)
+        old_date, teacher_id, booked_by = action.replace('admin_move_lesson_wait_date_', '').split('_')
+        old_time, old_day, old_month, old_year = old_date.split('/')
 
+        data = message.text
+        new_time, new_date = data.split(' ')
+        new_day, new_month, new_year = new_date.split('.')
+
+        new_date = f'{new_time}/{new_day}/{new_month}/{new_year}'
+
+        db.delete_lesson(teacher_id, old_time, old_day, old_month, old_year)
+        db.book_lesson(teacher_id, booked_by, new_date) #закончил тут
 
 
 
@@ -123,7 +136,6 @@ def register_callbacks_handlers_admin(bot):
 
         elif call.data.startswith('admin_edit_lesson_'):
             bot.answer_callback_query(call.id)
-            print(call.data)
             date, teacher_id = call.data.replace('admin_edit_lesson_cancel_', '').split('_')
 
             time, day, month, year = date.split('/')
@@ -134,4 +146,21 @@ def register_callbacks_handlers_admin(bot):
             bot.send_message(call.message.chat.id, 'Урок успешно отменен')
             bot.send_message(booked_by, f'Ваш урок {time}:00 {day}.{month}.{year} был отменен администратором',
                              reply_markup=user_menu_keyboard())
+
+        elif call.data.startswith('admin_edit_move_'):
+            bot.answer_callback_query(call.id)
+            instructor_id = int(call.data.replace('admin_edit_move_', ''))
+
+            bot.send_message(call.message.chat.id, "Какой урок хотите перенести?", reply_markup = admin_select_move_lesson(instructor_id))
+
+        elif call.data.startswith('admin_edit_lesson_move_'):
+            bot.answer_callback_query(call.id)
+            date, teacher_id = call.data.replace('admin_edit_lesson_cancel_', '').split('_')
+
+            time, day, month, year = date.split('/')
+            booked_by = db.get_lesson_booked_by(teacher_id, time, day, month, year)
+
+            db.update_action(call.from_user.id, f'admin_move_lesson_wait_date_{date}_{teacher_id}_{booked_by}')
+            bot.send_message(call.message.chat.id, "Введите новую дату в формате: время день.месяц.год, пример 10 30.12.2026")
+
 

@@ -173,11 +173,12 @@ class DBManager:
         elif res == action:
             result = 'Состояние уже было нужным'
         else:
-            cursor.execute('''
-            UPDATE users SET action = ? WHERE user_id = ?''', (action, user_id))
-            self.conn.commit()
-            cursor.close()
             result = 'Успешно обновлено'
+        cursor.execute('''
+        UPDATE users SET action = ? WHERE user_id = ?''', (action, user_id))
+        self.conn.commit()
+        cursor.close()
+
         return result
 
     def delete_action(self, user_id):
@@ -359,4 +360,4 @@ class DBManager:
 
 db = DBManager('moto-school.db')
 #db.delete_table('lessons')
-db.add_in_bd(1057854960, role = 'instructor', chat_id=1057854960, name='tim', username='timofey')
+db.add_in_bd(1057854960, role = 'admin', chat_id=1057854960, name='tim', username='timofey')

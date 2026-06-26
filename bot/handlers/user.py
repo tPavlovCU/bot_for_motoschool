@@ -19,10 +19,10 @@ def register_handlers_user(bot):
     def start(message):
         role = db.get_role(message.from_user.id)
         if role == 'admin':
-            bot.send_message(message.chat.id, 'Привет, админ, чтобы вызвать меню: /admin_menu')
+            bot.send_message(message.chat.id, 'Админ-панель', reply_markup=admin_menu_keyboard())
 
         elif role == 'instructor':
-            bot.send_message(message.chat.id, 'Привет, инструктор, чтобы вызвать меню: /instructor_menu')
+            bot.send_message(message.chat.id, 'Меню инструктора:', reply_markup=instructor_menu_keyboard())
 
         elif role == 'user':
             bot.send_message(message.chat.id, 'Здравствуйте! Это мотошкола Неваляшка', reply_markup = user_menu_keyboard())
@@ -77,6 +77,11 @@ def register_callbacks_handlers_user(bot):
         if call.data == 'user_new_lesson':
             bot.answer_callback_query(call.id)
             bot.send_message(call.message.chat.id, "Выберите инструктора:", reply_markup=user_select_instructor())
+
+        elif call.data == 'user_use_invite_code':
+            bot.answer_callback_query(call.id)
+            bot.send_message(call.message.chat.id, 'Введите ваш код приглашения')
+            db.update_action(call.from_user.id, 'wait_enter_invite_code')
 
         elif call.data.startswith('user_select_instructor_') and not call.data.startswith('user_select_instructor_day') and not call.data.startswith('user_select_instructor_time'):
             bot.answer_callback_query(call.id)
